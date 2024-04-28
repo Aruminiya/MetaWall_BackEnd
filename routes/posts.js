@@ -63,10 +63,14 @@ router.patch('/:id',handleErrorAsync(
   async function(req, res, next) {
     const { id } = req.params
     const editPosts = await Post.findByIdAndUpdate(id,req.body,{ new: true });
-    res.status(200).json({
-      "status":"success",
-      data: editPosts
-    });
+    if(editPosts){
+      res.status(200).json({
+        "status":"success",
+        data: editPosts
+      });
+    }else{
+      return next(appError(400,"找不到該編輯資料"))
+    }
   }
 ));
 
