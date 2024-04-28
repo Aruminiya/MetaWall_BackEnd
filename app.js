@@ -43,6 +43,14 @@ app.use((req, res, next) => {
         "message": "無此網站路由"
     });
   });
-  
+
+// 接收錯誤
+app.use(function(err,req,res,next){
+    console.log("觸發 app.use 的接收錯誤");
+    res.status(500).json({
+        "message": err.message,
+        "error": err
+    })
+})
 
 module.exports = app;

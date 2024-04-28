@@ -4,30 +4,31 @@ const Post = require("../models/postModel.js");
 // const User = require("../models/userModel.js");
 const handleError = require('../handleError.js');
 const handleSuccess = require('../handleSuccess.js');
+const appError = require('../errorHandeler/appError.js');
+const handleErrorAsync = require('../errorHandeler/handleErrorAsync.js');
 
 
 // 取得貼文
 router.get('/',async function(req, res, next) {
-  try{
+  if(req.query.q){
     const getPost = await Post.find(req.query).populate({
       path:'user',
       slect:'email'
     });
     handleSuccess(res, getPost);
-  }catch(err){
-    handleError(res, err, "取得貼文資料失敗");
+  }else{
+    next(appError(400,"沒有寫 query.q"));
   }
+  
 });
 
 // 新增貼文
-router.post('/',async function(req, res, next) {
-  try{
+router.post('/',handleErrorAsync(
+  async function(req, res, next) {
     const toPost = await Post.create(req.body);
     handleSuccess(res, toPost);
-  }catch(err){
-    handleError(res, err, "資料傳輸或建立失敗");
   }
-});
+));
 
 // 刪除所有貼文
 router.delete('/',async function(req, res, next) {
