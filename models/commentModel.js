@@ -1,12 +1,5 @@
 const mongoose = require('mongoose');
-const postSchema = new mongoose.Schema({
-        name: {
-            type:String,
-            required: [true,"姓名必填"]
-        },
-        tags:Array,
-        type: String,
-        image: String,
+const commentSchema = new mongoose.Schema({
         createdAt: {
             type: Date,
             default: Date.now,
@@ -21,15 +14,10 @@ const postSchema = new mongoose.Schema({
             type:Number,
             default: 0
         },
-        comments:{
-            type:Array,
-            ref:"Comment",
-            default: []
-        },
         user:{
             type:mongoose.Schema.ObjectId,
             ref:"User",
-            required:[true,"貼文姓名未填寫"]
+            require:[true,"留言姓名未填寫"]
         }
     },
     // versionKey 不要加入 mongoose 預設的 __v
@@ -42,9 +30,6 @@ const postSchema = new mongoose.Schema({
     }
 )
 
-const Post = mongoose.model('Post', postSchema);
-// Room 會被變成 rooms
-// 開頭變小寫
-// 強制加上 s
+const Comment = mongoose.model('Comment', commentSchema);
 
-module.exports = Post;
+module.exports = Comment;

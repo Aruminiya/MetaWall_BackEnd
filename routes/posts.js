@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Post = require("../models/postModel.js");
 // const User = require("../models/userModel.js");
+// const Comment = require("../models/commentModel.js");
 const appError = require('../errorHandeler/appError.js');
 const handleErrorAsync = require('../errorHandeler/handleErrorAsync.js');
 
@@ -11,7 +12,9 @@ router.get('/',handleErrorAsync(
   async function(req, res, next) {
     const getPost = await Post.find(req.query).populate({
       path:'user',
-      select:'email'
+      select:'name photo'
+    }).populate({
+      path: 'comments',
     });
     res.status(200).json({
       "status":"success",
