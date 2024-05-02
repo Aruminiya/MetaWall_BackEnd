@@ -15,6 +15,10 @@ router.get('/',handleErrorAsync(
       select:'name photo'
     }).populate({
       path: 'comments',
+      populate: { // 嵌套 populate
+        path: 'user',
+        select: 'name photo'
+      }
     });
     res.status(200).json({
       "status":"success",
