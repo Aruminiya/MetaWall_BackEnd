@@ -4,7 +4,7 @@ const commentSchema = new mongoose.Schema({
             type: Date,
             default: Date.now,
             // select 保護起來 只能在資料庫看到 前台回傳看不到
-            select: false
+            select: true
         },
         content:{
             type:String,
