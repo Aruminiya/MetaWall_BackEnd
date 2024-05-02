@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const User = require("../models/userModel.js");
-const handleError = require('../handleError.js');
-const handleSuccess = require('../handleSuccess.js');
 const appError = require('../errorHandeler/appError.js');
 const handleErrorAsync = require('../errorHandeler/handleErrorAsync.js');
 

@@ -23,11 +23,16 @@ router.get('/',handleErrorAsync(
 // 新增貼文
 router.post('/',handleErrorAsync(
   async function(req, res, next) {
-    const toPost = await Post.create(req.body);
-    res.status(200).json({
-      "status":"success",
-      data: toPost
-    });
+    if(Object.keys(req.body).length !== 0){
+      const toPost = await Post.create(req.body);
+      res.status(200).json({
+        "status":"success",
+        data: toPost
+      });
+    }else{
+      return next(appError(400,"你沒有填寫 content 資料"))
+    }
+    
   }
 ));
 

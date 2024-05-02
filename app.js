@@ -10,6 +10,15 @@ const postsRouter = require('./routes/posts.js');
 const usersRouter = require('./routes/users.js');
 
 const app = express();
+// 程式出現重大錯誤時
+process.on('uncaughtException', err => {
+    // 記錄錯誤下來，等到服務都處理完後，停掉該 process
+      console.error('Uncaughted Exception！')
+      console.error(err.name);
+      console.error(err.message);
+      console.error(err.stack);
+      process.exit(1);
+  });
 
 // 連接資料庫
 dotenv.config({path:"./config.env"});
@@ -52,5 +61,11 @@ app.use(function(err,req,res,next){
         "error": err
     })
 })
+
+// 未捕捉到的 catch 
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('未捕捉到的 rejection：', promise, '原因：', reason);
+    // 記錄於 log 上
+  });
 
 module.exports = app;
