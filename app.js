@@ -60,7 +60,8 @@ app.use(function(err,req,res,next){
     console.log("觸發 app.use 的接收錯誤");
     res.status(500).json({
         "message": err.message,
-        "error": err
+        "error": err,
+        "stack": err.stack
     })
 })
 
