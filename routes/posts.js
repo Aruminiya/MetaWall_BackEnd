@@ -3,8 +3,8 @@ const router = express.Router();
 const Post = require("../models/postModel.js");
 // const User = require("../models/userModel.js");
 // const Comment = require("../models/commentModel.js");
-const appError = require('../errorHandeler/appError.js');
-const handleErrorAsync = require('../errorHandeler/handleErrorAsync.js');
+const appError = require('../service/appError.js');
+const handleErrorAsync = require('../service/handleErrorAsync.js');
 
 
 // 取得貼文

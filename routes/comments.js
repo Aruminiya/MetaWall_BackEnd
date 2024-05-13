@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Comment = require("../models/commentModel.js");
 // const User = require("../models/userModel.js");
-const appError = require('../errorHandeler/appError.js');
-const handleErrorAsync = require('../errorHandeler/handleErrorAsync.js');
+const appError = require('../service/appError.js');
+const handleErrorAsync = require('../service/handleErrorAsync.js');
 
 
 // 取得留言

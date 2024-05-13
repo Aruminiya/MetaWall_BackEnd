@@ -1,32 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const User = require("../models/userModel.js");
-const appError = require('../errorHandeler/appError.js');
-const handleErrorAsync = require('../errorHandeler/handleErrorAsync.js');
-const authenticateToken = require('../middleware/authenticateToken.js');
+const appError = require('../service/appError.js');
+const handleErrorAsync = require('../service/handleErrorAsync.js');
+const { isAuth, generateSendJWT } = require('../service/auth.js');
 
 
 // bcrypt 密碼加密
 const bcrypt = require('bcryptjs');
 // validator 驗證
 const validator = require('validator');
-// JWT
-const jwt = require('jsonwebtoken');
-
-
-// 回傳 JWT 設定
-const generateSendJWT = (user, statusCode, res)=>{
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET,
-        {expiresIn: process.env.JWT_EXPIRES_DAY
-    });
-    // 密碼不能被包進 payload 裡面
-    user.password = undefined;
-    res.status(statusCode).json({
-        "status":"success",
-        data: user,
-        token
-    })
-}
 
 // 取得使用者
 router.get('/',handleErrorAsync(
@@ -85,13 +68,13 @@ router.post('/logIn',handleErrorAsync(
 
 
 // 驗證使用者登入狀態
-router.post('/check', authenticateToken, (req, res) => {
+router.post('/check', isAuth, (req, res) => {
     // 如果執行到這裡，表示 token 是有效的
     // 你可以執行任何與檢查登入狀態相關的操作
     res.status(200).json({ 
         "success": true,
         message: '用戶已經通過驗證',
-        userId: req.userId
+        user: req.user
     });
 });
 
