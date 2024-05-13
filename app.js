@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const indexRouter = require('./routes/index.js');
 const postsRouter = require('./routes/posts.js');
 const usersRouter = require('./routes/users.js');
+const uploadRouter = require('./routes/upload');
 const commentsRouter = require('./routes/comments.js');
 
 const app = express();
@@ -46,6 +47,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/posts', postsRouter);
 app.use('/users', usersRouter);
+app.use('/upload', uploadRouter);
 app.use('/comments', commentsRouter);
 // 404 中間件
 app.use((req, res, next) => {
