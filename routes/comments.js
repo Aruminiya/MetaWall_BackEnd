@@ -12,6 +12,12 @@ router.get('/',handleErrorAsync(
     const getComment = await Comment.find(req.query).populate({
       path:'user',
       select:'name photo'
+    }).populate({
+      path: 'likes',
+      populate: { // 嵌套 populate
+        path: 'user',
+        select: 'name photo'
+      }
     });
     res.status(200).json({
       "status":"success",

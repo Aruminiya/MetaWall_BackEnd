@@ -10,10 +10,12 @@ const commentSchema = new mongoose.Schema({
             type:String,
             required: [true,"內文必填"]
         },
-        likes:{
-            type:Number,
-            default: 0
-        },
+        likes:[
+            {
+                type:mongoose.Schema.ObjectId,
+                ref:"User",
+            }
+        ],
         user:{
             type:mongoose.Schema.ObjectId,
             ref:"User",

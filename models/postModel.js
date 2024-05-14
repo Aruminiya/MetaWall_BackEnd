@@ -17,10 +17,12 @@ const postSchema = new mongoose.Schema({
             type:String,
             required: [true,"內文必填"]
         },
-        likes:{
-            type:Number,
-            default: 0
-        },
+        likes:[
+            {
+                type:mongoose.Schema.ObjectId,
+                ref:"User",
+            }
+        ],
         comments:{
             type:Array,
             ref:"Comment",
