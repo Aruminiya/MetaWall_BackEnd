@@ -10,7 +10,10 @@ const handleErrorAsync = require('../service/handleErrorAsync.js');
 // 取得貼文
 router.get('/',handleErrorAsync(
   async function(req, res, next) {
-    const getPost = await Post.find(req.query).populate({
+    const { content } = req.query; // 获取查询参数中的关键字
+    const regex = new RegExp(content?.split(' ').join('|'), 'i'); // 使用正则表达式进行大小写不敏感的搜索，并将空格替换为|
+    const findRegex =content ? {content: regex} : undefined;
+    const getPost = await Post.find(findRegex).populate({
       path:'user',
       select:'name photo'
     }).populate({

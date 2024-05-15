@@ -10,8 +10,17 @@ const postsRouter = require('./routes/posts.js');
 const usersRouter = require('./routes/users.js');
 const uploadRouter = require('./routes/upload');
 const commentsRouter = require('./routes/comments.js');
+const cors = require('cors');
 
 const app = express();
+
+// cors 設定
+const corsOptions = {
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
 // 程式出現重大錯誤時
 process.on('uncaughtException', err => {
     // 記錄錯誤下來，等到服務都處理完後，停掉該 process
@@ -38,6 +47,7 @@ mongoose.connect(DB).then(()=>{
     console.log(error);
 });
 
+app.use(cors(corsOptions));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
