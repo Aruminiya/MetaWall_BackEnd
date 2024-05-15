@@ -13,7 +13,33 @@ router.get('/',handleErrorAsync(
     const { content } = req.query; // 获取查询参数中的关键字
     const regex = new RegExp(content?.split(' ').join('|'), 'i'); // 使用正则表达式进行大小写不敏感的搜索，并将空格替换为|
     const findRegex =content ? {content: regex} : undefined;
-    const getPost = await Post.find(findRegex).populate({
+
+    // 获取前端传入的排序选项
+    const sortOption = req.query?.sortOption || 'newToOld';
+    console.log(sortOption);
+
+    // 根据不同的排序选项构建不同的排序对象
+    let sortQuery = {};
+    switch (sortOption) {
+      case 'oldToNew':
+        sortQuery = { createdAt: 1 }; // 贴文时间由旧到新
+        break;
+      case 'newToOld':
+        sortQuery = { createdAt: -1 }; // 贴文时间由新到旧
+        break;
+      case 'mostLikes':
+        sortQuery = { likes: -1 }; // 按赞数由多到少
+        break;
+      case 'leastLikes':
+        sortQuery = { likes: 1 }; // 按赞数由少到多
+        break;
+      default:
+        // 默认排序方式
+        sortQuery = { createdAt: -1 }; // 默认按贴文时间由新到旧排序
+        break;
+    }
+
+    const getPost = await Post.find(findRegex).sort(sortQuery).populate({
       path:'user',
       select:'name photo'
     }).populate({

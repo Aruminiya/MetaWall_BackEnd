@@ -1,9 +1,5 @@
 const mongoose = require('mongoose');
 const postSchema = new mongoose.Schema({
-        name: {
-            type:String,
-            required: [true,"姓名必填"]
-        },
         tags:Array,
         type: String,
         image: String,
