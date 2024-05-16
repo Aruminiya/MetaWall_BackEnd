@@ -16,7 +16,6 @@ router.get('/',handleErrorAsync(
 
     // 获取前端传入的排序选项
     const sortOption = req.query?.sortOption || 'newToOld';
-    console.log(sortOption);
 
     // 根据不同的排序选项构建不同的排序对象
     let sortQuery = {};
@@ -44,7 +43,10 @@ router.get('/',handleErrorAsync(
       select:'name photo'
     }).populate({
       path: 'likes',
-      select:'name photo'
+      populate: { // 嵌套 populate
+        path: 'user',
+        select: 'name photo'
+      }
     }).populate({
       path: 'comments',
       populate: { // 嵌套 populate

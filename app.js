@@ -10,6 +10,7 @@ const postsRouter = require('./routes/posts.js');
 const usersRouter = require('./routes/users.js');
 const uploadRouter = require('./routes/upload');
 const commentsRouter = require('./routes/comments.js');
+const likesRouter = require('./routes/likes.js');
 const cors = require('cors');
 
 const app = express();
@@ -59,6 +60,7 @@ app.use('/posts', postsRouter);
 app.use('/users', usersRouter);
 app.use('/upload', uploadRouter);
 app.use('/comments', commentsRouter);
+app.use('/likes', likesRouter);
 // 404 中間件
 app.use((req, res, next) => {
     res.status(404).json({
