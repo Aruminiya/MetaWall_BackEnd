@@ -26,7 +26,10 @@ router.get('/',handleErrorAsync(
 // 新增按讚
 router.post('/',handleErrorAsync(
   async function(req, res, next) {
-    if(Object.keys(req.body).length !== 0){
+
+    if(validator.isEmpty(req.body.user)){return next(appError(400,"使用者 ID 不得為空"))};
+    if(validator.isEmpty(req.body.post)){return next(appError(400,"貼文 ID 不得為空"))};
+
 
       // 先檢查該使用者是否已經對該貼文按過讚
       const userId = req.body.user;
@@ -36,18 +39,11 @@ router.post('/',handleErrorAsync(
         return next(appError(400,"你已按過讚"))
       }else{
         const toLike = await Like.create(req.body);
-        const toLikeID = toLike._id
-        // 然後把按讚推入 該 Post 資料
-        await Post.findByIdAndUpdate(toLike.post,{ $push: { likes: toLikeID } },{ new: true });
         res.status(200).json({
             "status":"success",
             data: toLike,
           });
-      }
-    }else{
-      return next(appError(400,"你沒有填寫資料"))
-    }
-    
+      }    
   }
 ));
 
