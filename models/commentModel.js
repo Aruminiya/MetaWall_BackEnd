@@ -10,16 +10,15 @@ const commentSchema = new mongoose.Schema({
             type:String,
             required: [true,"內文必填"]
         },
-        // likes:[
-        //     {
-        //         type:mongoose.Schema.ObjectId,
-        //         ref:"User",
-        //     }
-        // ],
         user:{
             type:mongoose.Schema.ObjectId,
             ref:"User",
-            require:[true,"留言姓名未填寫"]
+            require:[true,"留言須對應到使用者"]
+        },
+        post:{
+            type:mongoose.Schema.ObjectId,
+            ref:"Post",
+            require:[true,"留言須對應到貼文"]
         }
     },
     // versionKey 不要加入 mongoose 預設的 __v
@@ -31,6 +30,18 @@ const commentSchema = new mongoose.Schema({
         // timestamps: true
     }
 )
+// 在查詢 Comment 時，自動填充 user 和 post 字段
+commentSchema.pre(/^find/, function(next) {
+    // ^find 表示匹配所有以 "find" 開頭的查詢方法（如 find, findOne, findById 等）
+    this.populate({
+        path: 'user', // 指定要填充的字段是 user
+        select: 'name id createdAt' // 填充時選擇的字段，這裡只選擇 name, id 和 createdAt
+    }).populate({
+        path: 'post' // 指定要填充的字段是 post，這裡填充所有字段
+    });
+
+    next(); // 調用 next() 以繼續查詢流程
+});
 
 const Comment = mongoose.model('Comment', commentSchema);
 

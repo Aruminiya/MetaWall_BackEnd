@@ -38,22 +38,15 @@ router.get('/',handleErrorAsync(
         break;
     }
 
-    const getPost = await Post.find(findRegex).sort(sortQuery).populate({
+    const getPost = await Post.find(findRegex).populate({
       path:'user',
       select:'name photo'
     }).populate({
-      path: 'likes',
-      populate: { // 嵌套 populate
-        path: 'user',
-        select: 'name photo'
-      }
-    }).populate({
       path: 'comments',
-      populate: { // 嵌套 populate
-        path: 'user',
-        select: 'name photo'
-      }
-    });
+    }).populate({
+      path: 'likes',
+    }).sort(sortQuery);
+
     res.status(200).json({
       "status":"success",
       data: getPost
