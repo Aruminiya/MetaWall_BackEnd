@@ -66,9 +66,7 @@ router.delete('/:id',handleErrorAsync(
   async function(req, res, next) {
     const { id } = req.params
     const deleteLike = await Like.findByIdAndDelete(id);
-    const deletePostId = deleteLike.post;
-     // 然後把按讚拉出 該 Post 資料
-     await Post.findByIdAndUpdate(deletePostId, { $pull: { likes: id } },{ new: true });
+
     if(deleteLike){
       res.status(200).json({
         "status":"success",
