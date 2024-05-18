@@ -6,6 +6,9 @@ const Post = require("../models/postModel.js");
 const appError = require('../service/appError.js');
 const handleErrorAsync = require('../service/handleErrorAsync.js');
 
+// validator 驗證
+const validator = require('validator');
+
 
 // 取得按讚
 router.get('/',handleErrorAsync(
