@@ -23,7 +23,7 @@ router.get('/',handleErrorAsync(
 ));
 
 // 使用者註冊
-router.post('/signUp',handleErrorAsync(
+router.post('/sign_up',handleErrorAsync(
     async function(req, res, next) {
         // 取的傳入的 body 帳密後把密碼加密
         const { name, email, sex, password } = req.body;
@@ -42,7 +42,7 @@ router.post('/signUp',handleErrorAsync(
 ));
 
 // 使用者登入
-router.post('/logIn',handleErrorAsync(
+router.post('/sign_in',handleErrorAsync(
     async function(req, res, next) {
         const { email, password } = req.body;
 
@@ -105,11 +105,18 @@ router.delete('/:id',handleErrorAsync(
     }
 ));
 
-// 編輯單一使用者
+// 編輯單一使用者 
 router.patch('/:id',handleErrorAsync(
     async function(req, res, next) {
         const { id } = req.params;
-        const editUser = await User.findByIdAndUpdate(id,req.body,{ new: true });
+        const reqBody = req.body;
+        
+        // 如果有修改密碼 要加密
+        if (reqBody.password){
+            if(!validator.isLength(reqBody.password,{ min: 8 })){return next(appError(400,"密碼需要 8 碼以上"))};
+            reqBody.password = await bcrypt.hash(reqBody.password,12);
+        }
+        const editUser = await User.findByIdAndUpdate(id,reqBody,{ new: true });
         if(editUser){
             res.status(200).json({
               "status":"success",
