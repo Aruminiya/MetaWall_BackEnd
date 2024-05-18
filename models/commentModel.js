@@ -35,7 +35,7 @@ commentSchema.pre(/^find/, function(next) {
     // ^find 表示匹配所有以 "find" 開頭的查詢方法（如 find, findOne, findById 等）
     this.populate({
         path: 'user', // 指定要填充的字段是 user
-        select: 'name id createdAt' // 填充時選擇的字段，這裡只選擇 name, id 和 createdAt
+        select: 'name id photo createdAt' // 填充時選擇的字段，這裡只選擇 name, id 和 createdAt
     }).populate({
         path: 'post' // 指定要填充的字段是 post，這裡填充所有字段
     });

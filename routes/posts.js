@@ -40,7 +40,7 @@ router.get('/',handleErrorAsync(
 
     const getPost = await Post.find(findRegex).populate({
       path:'user',
-      // select:'name photo'
+      select:'name photo'
     }).populate({
       path: 'comments',
     }).populate({
