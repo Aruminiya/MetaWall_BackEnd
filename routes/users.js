@@ -115,12 +115,89 @@ router.patch('/:id',handleErrorAsync(
         if (reqBody.password){
             if(!validator.isLength(reqBody.password,{ min: 8 })){return next(appError(400,"密碼需要 8 碼以上"))};
             reqBody.password = await bcrypt.hash(reqBody.password,12);
+        };
+        // 如果有要修改追蹤朋友或追蹤者資料的話 提示請去使用別的 API 
+        // 因為這之 API 只能修改單一使用者 
+        // 而追蹤功能 需要同時修改追蹤者與被追蹤者的資料
+        if (reqBody.follower || reqBody.following) {
+            return next(appError(400,"不能在此修該追蹤資料 請使用 {userID}/follow 這支 API 修改"))
         }
+        
+
         const editUser = await User.findByIdAndUpdate(id,reqBody,{ new: true });
         if(editUser){
             res.status(200).json({
               "status":"success",
               data: editUser
+            });
+          }else{
+            return next(appError(400,"找不到該編輯資料"))
+          }
+    }
+));
+
+// 使用者追蹤他人
+router.patch('/:userId/follow',handleErrorAsync(
+    async function(req, res, next) {
+        const { userId } = req.params;
+        const userfollowingId = req.body.following;
+
+        // 检查是否已经在追踪名单中
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return next(appError(400, "用戶不存在"));
+        }
+        if (user.following.includes(userfollowingId)) {
+            return next(appError(400, "已經在追蹤名單中"));
+        }
+
+        // 先更新追蹤者的 追蹤名單
+        const editUserFollowing = await User.findByIdAndUpdate(userId,{ $push: { following: userfollowingId } },{ new: true });
+
+        // 再更新被追蹤者的被追蹤名單
+        const editFollowerId = await User.findByIdAndUpdate(userfollowingId,{ $push: { follower: userId } },{ new: true });
+
+        if(editUserFollowing && editFollowerId ){
+            res.status(200).json({
+              "status":"success",
+              following: editUserFollowing,
+              follower: editFollowerId
+            });
+          }else{
+            return next(appError(400,"找不到該編輯資料"))
+          }
+    }
+));
+
+// 使用者不追蹤他人
+router.patch('/:userId/unfollow',handleErrorAsync(
+    async function(req, res, next) {
+
+        // 先更新追蹤者的 追蹤名單
+        const { userId } = req.params;
+        const userfollowingId = req.body.following;
+
+        
+        // 检查是否已经在追踪名单中
+        const user = await User.findById(userId);
+        if (!user) {
+            return next(appError(400, "用戶不存在"));
+        }
+        if (!user.following.includes(userfollowingId)) {
+            return next(appError(400, "使用者不在追蹤名單中"));
+        }
+
+        const editUserFollowing = await User.findByIdAndUpdate(userId,{ $pull: { following: userfollowingId } },{ new: true });
+
+        // 再更新被追蹤者的被追蹤名單
+        const editFollowerId = await User.findByIdAndUpdate(userfollowingId,{ $pull: { follower: userId } },{ new: true });
+
+        if(editUserFollowing && editFollowerId ){
+            res.status(200).json({
+              "status":"success",
+              following: editUserFollowing,
+              follower: editFollowerId
             });
           }else{
             return next(appError(400,"找不到該編輯資料"))

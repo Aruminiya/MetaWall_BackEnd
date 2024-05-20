@@ -22,12 +22,22 @@ const userSchema = new mongoose.Schema({
       minlenth: 8,
       select: false
     },
+    follower: [
+      {
+        type:mongoose.Schema.ObjectId,
+      }
+    ],
+    following: [
+      {
+        type:mongoose.Schema.ObjectId,
+      }
+    ],
     createdAt: {
       type: Date,
       default: Date.now,
       // select 保護起來 只能在資料庫看到 前台回傳看不到
       select: false
-  },
+    },
   },
   // versionKey 不要加入 mongoose 預設的 __v
   // collection 自訂資料庫集合名稱 不受 mongoose 預設規範限制
