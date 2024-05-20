@@ -8,51 +8,53 @@ const handleErrorAsync = require('../service/handleErrorAsync.js');
 
 
 // 取得貼文
-router.get('/',handleErrorAsync(
+router.get('/', handleErrorAsync(
   async function(req, res, next) {
-    const { content } = req.query; // 获取查询参数中的关键字
+    const { content, userId, sortOption = 'newToOld' } = req.query; // 获取查询参数中的关键字和排序选项
     const regex = new RegExp(content?.split(' ').join('|'), 'i'); // 使用正则表达式进行大小写不敏感的搜索，并将空格替换为|
-    const findRegex =content ? {content: regex} : undefined;
+    const findRegex = userId ? { user: userId, content: regex } : { content: regex };
 
-    // 获取前端传入的排序选项
-    const sortOption = req.query?.sortOption || 'newToOld';
+    // 查询数据
+    const getPost = await Post.find(findRegex)
+      .populate({
+        path: 'user',
+        select: 'name photo'
+      })
+      .populate({
+        path: 'comments'
+      })
+      .populate({
+        path: 'likes'
+      });
 
-    // 根据不同的排序选项构建不同的排序对象
-    let sortQuery = {};
+    // 基于不同的排序选项进行排序
+    let sortedPosts;
     switch (sortOption) {
       case 'oldToNew':
-        sortQuery = { createdAt: 1 }; // 贴文时间由旧到新
+        sortedPosts = getPost.sort((a, b) => a.createdAt - b.createdAt); // 贴文时间由旧到新
         break;
       case 'newToOld':
-        sortQuery = { createdAt: -1 }; // 贴文时间由新到旧
+        sortedPosts = getPost.sort((a, b) => b.createdAt - a.createdAt); // 贴文时间由新到旧
         break;
       case 'mostLikes':
-        sortQuery = { likes: -1 }; // 按赞数由多到少
+        sortedPosts = getPost.sort((a, b) => b.likes.length - a.likes.length); // 按赞数由多到少
         break;
       case 'leastLikes':
-        sortQuery = { likes: 1 }; // 按赞数由少到多
+        sortedPosts = getPost.sort((a, b) => a.likes.length - b.likes.length); // 按赞数由少到多
         break;
       default:
         // 默认排序方式
-        sortQuery = { createdAt: -1 }; // 默认按贴文时间由新到旧排序
+        sortedPosts = getPost.sort((a, b) => b.createdAt - a.createdAt); // 默认按贴文时间由新到旧排序
         break;
     }
 
-    const getPost = await Post.find(findRegex).populate({
-      path:'user',
-      select:'name photo'
-    }).populate({
-      path: 'comments',
-    }).populate({
-      path: 'likes',
-    }).sort(sortQuery);
-
     res.status(200).json({
-      "status":"success",
-      data: getPost
+      "status": "success",
+      data: sortedPosts
     });
-}
+  }
 ));
+
 
 // 新增貼文
 router.post('/',handleErrorAsync(
