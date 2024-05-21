@@ -34,7 +34,11 @@ likeSchema.pre(/^find/, function(next) {
         path: 'user', // 指定要填充的字段是 user
         select: 'name id createdAt' // 填充時選擇的字段，這裡只選擇 name, id 和 createdAt
     }).populate({
-        path: 'post' // 指定要填充的字段是 post，這裡填充所有字段
+        path: 'post', // 指定要填充的字段是 post，這裡填充所有字段
+        populate: {
+            path: 'user',
+            select: 'name photo' // 选择需要返回的字段
+        }
     });
 
     next(); // 調用 next() 以繼續查詢流程

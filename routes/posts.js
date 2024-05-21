@@ -10,9 +10,13 @@ const handleErrorAsync = require('../service/handleErrorAsync.js');
 // 取得貼文
 router.get('/', handleErrorAsync(
   async function(req, res, next) {
-    const { content, userId, sortOption = 'newToOld' } = req.query; // 获取查询参数中的关键字和排序选项
+    const { content, userId, sortOption = 'newToOld', _id } = req.query; // 获取查询参数中的关键字和排序选项
     const regex = new RegExp(content?.split(' ').join('|'), 'i'); // 使用正则表达式进行大小写不敏感的搜索，并将空格替换为|
-    const findRegex = userId ? { user: userId, content: regex } : { content: regex };
+    let findRegex = userId ? { user: userId, content: regex } : { content: regex };
+    if ( _id ) {
+      findRegex = { _id: _id }
+    }
+    console.log(findRegex);
 
     // 查询数据
     const getPost = await Post.find(findRegex)
