@@ -23,7 +23,7 @@ router.get('/',handleErrorAsync(
 ));
 
 // 使用者註冊
-router.post('/sign_up',handleErrorAsync(
+router.post('/signUp',handleErrorAsync(
     async function(req, res, next) {
         // 取的傳入的 body 帳密後把密碼加密
         const { name, email, sex, password } = req.body;
@@ -42,7 +42,7 @@ router.post('/sign_up',handleErrorAsync(
 ));
 
 // 使用者登入
-router.post('/sign_in',handleErrorAsync(
+router.post('/logIn',handleErrorAsync(
     async function(req, res, next) {
         const { email, password } = req.body;
 
