@@ -14,7 +14,11 @@ const validator = require('validator');
 // 取得使用者
 router.get('/',handleErrorAsync(
     async function(req, res, next) {
-    const getUser = await User.find(req.query);
+    const getUser = await User.find(req.query).populate({
+        path: 'follower',
+      }).populate({
+        path: 'following',
+      });
     res.status(200).json({
         "status":"success",
         data: getUser
