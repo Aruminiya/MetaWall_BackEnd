@@ -16,8 +16,14 @@ router.get('/',handleErrorAsync(
     async function(req, res, next) {
     const getUser = await User.find(req.query).populate({
         path: 'follower',
+        populate: {
+            path: 'user',
+        }
       }).populate({
         path: 'following',
+        populate: {
+            path: 'user',
+        }
       });
     res.status(200).json({
         "status":"success",
@@ -141,71 +147,82 @@ router.patch('/:id',handleErrorAsync(
 ));
 
 // 使用者追蹤他人
-router.patch('/:userId/follow',handleErrorAsync(
+router.patch('/:userId/follow', handleErrorAsync(
     async function(req, res, next) {
         const { userId } = req.params;
-        const userfollowingId = req.body.following;
+        const userFollowingId = req.body.following;
 
-        // 检查是否已经在追踪名单中
+        // 檢查是否已經在追蹤名單中
         const user = await User.findById(userId);
-
         if (!user) {
             return next(appError(400, "用戶不存在"));
         }
-        if (user.following.includes(userfollowingId)) {
+        const alreadyFollowing = user.following.some(f => f.user.equals(userFollowingId));
+        if (alreadyFollowing) {
             return next(appError(400, "已經在追蹤名單中"));
         }
 
-        // 先更新追蹤者的 追蹤名單
-        const editUserFollowing = await User.findByIdAndUpdate(userId,{ $push: { following: userfollowingId } },{ new: true });
+        // 更新追蹤者的追蹤名單
+        const editUserFollowing = await User.findByIdAndUpdate(userId, 
+            { $push: { following: { user: userFollowingId, createdAt: new Date() } } },
+            { new: true }
+        );
 
-        // 再更新被追蹤者的被追蹤名單
-        const editFollowerId = await User.findByIdAndUpdate(userfollowingId,{ $push: { follower: userId } },{ new: true });
+        // 更新被追蹤者的被追蹤名單
+        const editFollowerId = await User.findByIdAndUpdate(userFollowingId,
+            { $push: { follower: { user: userId, createdAt: new Date() } } },
+            { new: true }
+        );
 
-        if(editUserFollowing && editFollowerId ){
+        if (editUserFollowing && editFollowerId) {
             res.status(200).json({
-              "status":"success",
-              following: editUserFollowing,
-              follower: editFollowerId
+                status: "success",
+                following: editUserFollowing,
+                follower: editFollowerId
             });
-          }else{
-            return next(appError(400,"找不到該編輯資料"))
-          }
+        } else {
+            return next(appError(400, "找不到該編輯資料"));
+        }
     }
 ));
 
 // 使用者不追蹤他人
-router.patch('/:userId/unfollow',handleErrorAsync(
+router.patch('/:userId/unfollow', handleErrorAsync(
     async function(req, res, next) {
-
-        // 先更新追蹤者的 追蹤名單
         const { userId } = req.params;
-        const userfollowingId = req.body.following;
+        const userFollowingId = req.body.following;
 
-        
-        // 检查是否已经在追踪名单中
+        // 檢查是否已經在追蹤名單中
         const user = await User.findById(userId);
         if (!user) {
             return next(appError(400, "用戶不存在"));
         }
-        if (!user.following.includes(userfollowingId)) {
+        const alreadyFollowing = user.following.some(f => f.user.equals(userFollowingId));
+        if (!alreadyFollowing) {
             return next(appError(400, "使用者不在追蹤名單中"));
         }
 
-        const editUserFollowing = await User.findByIdAndUpdate(userId,{ $pull: { following: userfollowingId } },{ new: true });
+        // 更新追蹤者的追蹤名單
+        const editUserFollowing = await User.findByIdAndUpdate(userId, 
+            { $pull: { following: { user: userFollowingId } } },
+            { new: true }
+        );
 
-        // 再更新被追蹤者的被追蹤名單
-        const editFollowerId = await User.findByIdAndUpdate(userfollowingId,{ $pull: { follower: userId } },{ new: true });
+        // 更新被追蹤者的被追蹤名單
+        const editFollowerId = await User.findByIdAndUpdate(userFollowingId,
+            { $pull: { follower: { user: userId } } },
+            { new: true }
+        );
 
-        if(editUserFollowing && editFollowerId ){
+        if (editUserFollowing && editFollowerId) {
             res.status(200).json({
-              "status":"success",
-              following: editUserFollowing,
-              follower: editFollowerId
+                status: "success",
+                following: editUserFollowing,
+                follower: editFollowerId
             });
-          }else{
-            return next(appError(400,"找不到該編輯資料"))
-          }
+        } else {
+            return next(appError(400, "找不到該編輯資料"));
+        }
     }
 ));
 

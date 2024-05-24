@@ -1,4 +1,18 @@
 const mongoose = require('mongoose');
+
+// 子文件 schema，用於 follower 和 following 關係
+const relationshipSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+}, { _id: false });
+
 const userSchema = new mongoose.Schema({
     name: {
       type: String,
@@ -23,16 +37,10 @@ const userSchema = new mongoose.Schema({
       select: false
     },
     follower: [
-      {
-        type:mongoose.Schema.ObjectId,
-        ref:"User",
-      }
+      relationshipSchema
     ],
     following: [
-      {
-        type:mongoose.Schema.ObjectId,
-        ref:"User",
-      }
+      relationshipSchema
     ],
     createdAt: {
       type: Date,
