@@ -34,12 +34,12 @@ process.on('uncaughtException', err => {
 
 // 連接資料庫
 dotenv.config({path:"./config.env"});
-// const DB = process.env.DATABASE.replace(
-//     '<password>',
-//     process.env.DATABASE_PASSWORD
-//   );
+const DB = process.env.DATABASE.replace(
+    '<password>',
+    process.env.DATABASE_PASSWORD
+  );
 
-const DB = 'mongodb://127.0.0.1:27017/MetaWall';
+// const DB = 'mongodb://127.0.0.1:27017/MetaWall';
 
 mongoose.connect(DB).then(()=>{
     console.log('資料庫連線成功');
